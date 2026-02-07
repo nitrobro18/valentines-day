@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Valentine Card 💖</title>
+<style>
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #ff9ecb, #ffc0da);
+    overflow: hidden;
+  }
+
+  .screen {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  .card {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    max-width: 380px;
+    width: 90%;
+    position: relative;
+  }
+
+  img {
+    width: 220px;
+    border-radius: 12px;
+  }
+
+  h1 {
+    color: #ff4f87;
+  }
+
+  .yesBtn {
+    position: absolute;
+    padding: 12px 22px;
+    border-radius: 25px;
+    border: none;
+    background: #ff4f87;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+  }
+
+  .counter {
+    margin-top: 15px;
+    color: #777;
+    font-size: 14px;
+  }
+
+  /* HEART RAIN */
+  .heart {
+    position: absolute;
+    pointer-events: none;
+    animation: heartRain linear forwards;
+  }
+
+  @keyframes heartRain {
+    0% {
+      transform: translateY(-50px) rotate(0deg);
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(110vh) rotate(360deg);
+      opacity: 0;
+    }
+  }
+
+  .confetti {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: pink;
+    animation: fall 2s linear forwards;
+  }
+
+  @keyframes fall {
+    to {
+      transform: translateY(600px) rotate(360deg);
+      opacity: 0;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- SCREEN 1 -->
+<div class="screen" id="screen1">
+  <div class="card" id="card1">
+    <img src="https://uploads.onecompiler.io/437fmr2ub/4476smy5s/milk-and-mocha-bear-498-x-403-gif-jdpdudg2w3gs749e.gif">
+    <h1>Denise will You Be My Valentine? 💕</h1>
+    <p>Catch the Yes button 5 times!</p>
+    <button class="yesBtn" id="yesBtn">Yes 💖</button>
+    <div class="counter" id="counter">Caught: 0 / 5</div>
+  </div>
+</div>
+
+<!-- SCREEN 2 -->
+<div class="screen hidden" id="screen2">
+  <div class="card">
+    <img src="https://uploads.onecompiler.io/437fmr2ub/4476smy5s/milk-and-mocha-bear-hug.gif">
+    <h1>Te quiero más que a nada en el mundo, hermosa!!! 🥰</h1>
+    <p>Sending you the biggest hug ever!</p>
+  </div>
+</div>
+
+<script>
+  const yesBtn = document.getElementById("yesBtn");
+  const card = document.getElementById("card1");
+  const counterText = document.getElementById("counter");
+  let count = 0;
+
+  let hoverTimer = null;
+  let heartRainInterval = null; // NEW
+  const ESCAPE_TIME = 5000;
+
+  function moveButton() {
+    const rect = card.getBoundingClientRect();
+    const x = Math.random() * (rect.width - 110);
+    const y = Math.random() * (rect.height - 70);
+    yesBtn.style.left = x + "px";
+    yesBtn.style.top = y + "px";
+  }
+
+  function startEscapeTimer() {
+    clearTimeout(hoverTimer);
+    hoverTimer = setTimeout(moveButton, ESCAPE_TIME);
+  }
+
+  function cancelEscapeTimer() {
+    clearTimeout(hoverTimer);
+  }
+
+  function createHeartRain() {
+    const heartCount = 40;
+    const emojis = ["💗","💖","💘","💕","💝"];
+
+    for (let i = 0; i < heartCount; i++) {
+      const heart = document.createElement("div");
+      heart.className = "heart";
+      heart.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+
+      heart.style.left = Math.random() * window.innerWidth + "px";
+      heart.style.fontSize = 16 + Math.random() * 24 + "px";
+
+      const duration = 2 + Math.random() * 3;
+      heart.style.animationDuration = duration + "s";
+
+      document.body.appendChild(heart);
+      setTimeout(() => heart.remove(), duration * 1000);
+    }
+  }
+
+  function confettiBurst() {
+    for (let i = 0; i < 50; i++) {
+      const c = document.createElement("div");
+      c.className = "confetti";
+      c.style.left = Math.random() * window.innerWidth + "px";
+      c.style.top = "-10px";
+      document.body.appendChild(c);
+      setTimeout(() => c.remove(), 2000);
+    }
+  }
+
+  function nextScreen() {
+    document.getElementById("screen1").classList.add("hidden");
+    document.getElementById("screen2").classList.remove("hidden");
+    confettiBurst();
+
+    // INFINITE HEART RAIN
+    if (!heartRainInterval) {
+      heartRainInterval = setInterval(() => {
+        createHeartRain();
+      }, 1200);
+    }
+  }
+
+  yesBtn.addEventListener("mouseenter", startEscapeTimer);
+  yesBtn.addEventListener("mouseleave", cancelEscapeTimer);
+  yesBtn.addEventListener("touchstart", startEscapeTimer);
+  yesBtn.addEventListener("touchend", cancelEscapeTimer);
+
+  yesBtn.addEventListener("click", () => {
+    cancelEscapeTimer();
+    count++;
+    counterText.innerText = `Caught: ${count} / 5`;
+
+    if (count >= 5) {
+      nextScreen();
+    } else {
+      moveButton();
+    }
+  });
+
+  moveButton();
+</script>
+
+</body>
+</html>
